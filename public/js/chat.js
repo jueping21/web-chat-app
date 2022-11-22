@@ -1,22 +1,20 @@
-const socket = io()
-
 // Elements
 const messageForm = document.querySelector('#message-form')
 const messageFormInput = messageForm.querySelector('input')
 const messageFormButton = messageForm.querySelector('button')
 const sendLocationButton = document.querySelector('#send-location')
 const messages = document.querySelector('#messages')
-
+const loading = document.querySelector('.loading')
+const chatView = document.querySelector('.chat')
 
 // Templates
-const messageTemplate = document.querySelector('#message-template').innerHTML
-const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+const userMessageTemplate = document.querySelector('#user-message-template').innerHTML
+const adminMessageTemplate = document.querySelector('#admin-message-template').innerHTML
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 
-
 // Options
+// TODO: implement a parser  
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
-
 
 const autoscroll = () => {
     // New message element
@@ -41,77 +39,76 @@ const autoscroll = () => {
     }
 }
 
-socket.on('message', (message) => {
-    console.log(message)
-    const html = Mustache.render(messageTemplate, {
-        username: message.username,
-        message: message.text,
-        createdAt: moment(message.createdAt).format('h:mm a')
-    })
-    messages.insertAdjacentHTML('beforeend', html)
-    autoscroll()
-})
+const messageControl = (message) => {
+    if (message.username == "Admin") {
+        const adminhtml = Mustache.render(adminMessageTemplate, {
+            message: message.text,
+            createdAt: moment(message.createdAt).format('h:mm a')
+        })
+        messages.insertAdjacentHTML('beforeend', adminhtml)
+    } else {
+        const html = Mustache.render(userMessageTemplate, {
+            username: message.username,
+            message: message.text,
+            createdAt: moment(message.createdAt).format('h:mm a')
+        })
 
-socket.on('locationMessage', (message) => {
-    console.log(message)
-    const html = Mustache.render(locationMessageTemplate, {
-        username: message.username,
-        url: message.url,
-        createdAt: moment(message.createdAt).format('h:mm a')
-    })
-    messages.insertAdjacentHTML('beforeend', html)
+        messages.insertAdjacentHTML('beforeend', html)
+        if (message.username == username) {
+            messages.lastElementChild.style.backgroundColor = "#EEE8F8";
+            messages.lastElementChild.style.marginLeft = "auto";
+        }
+    }
     autoscroll()
-})
+}
 
-socket.on('roomData', ({ room, users }) => {
+const roomControl = (roomInfo) => {
+    const room = roomInfo.room;
+    const users = roomInfo.users;
     const html = Mustache.render(sidebarTemplate, {
         room,
         users
     })
     document.querySelector('#sidebar').innerHTML = html
-})
+}
 
-messageForm.addEventListener('submit', (e) => {
-    e.preventDefault()
-
-    messageFormButton.setAttribute('disabled', 'disabled')
-
-    const message = e.target.elements.message.value
-
-    socket.emit('sendMessage', message, (error) => {
-        messageFormButton.removeAttribute('disabled')
-        messageFormInput.value = ''
-        messageFormInput.focus()
-
-        if (error) {
-            return console.log(error)
-        }
-
-        console.log('Message delivered!')
-    })
-})
-
-sendLocationButton.addEventListener('click', () => {
-    if (!navigator.geolocation) {
-        return alert('Geolocation is not supported by your browser.')
-    }
-
-    sendLocationButton.setAttribute('disabled', 'disabled')
-
-    navigator.geolocation.getCurrentPosition((position) => {
-        socket.emit('sendLocation', {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-        }, () => {
-            sendLocationButton.removeAttribute('disabled')
-            console.log('Location shared!')  
-        })
-    })
-})
-
-socket.emit('join', { username, room }, (error) => {
+const joinAckCallback = (error) => {
     if (error) {
         alert(error)
         location.href = '/'
     }
+}
+
+const sendAckCallback = (error) => {
+    messageFormButton.removeAttribute('disabled')
+    messageFormInput.value = ''
+    messageFormInput.focus()
+    if (error) {
+        return console.log(error)
+    }
+    console.log('Message delivered!')
+}
+
+const succeed = () => {
+    loading.style.display = "none";
+    chatView.style.display = "flex";
+}
+
+const failed = () => {
+    alert("Time out")
+    location.href = '/'
+}
+
+const chat = new Socket({ succeed, failed }, 10000);
+chat.waitMessage(messageControl);
+chat.waitRoomInfo(roomControl);
+chat.joinChat({ username, room }, joinAckCallback);
+
+
+messageForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    messageFormButton.setAttribute('disabled', 'disabled')
+    const message = e.target.elements.message.value
+    chat.send(message, sendAckCallback)
 })
+
