@@ -40,7 +40,7 @@ const autoscroll = () => {
 }
 
 const messageControl = (message) => {
-    if (message.username == "Admin") {
+    if (message.system) {
         const adminhtml = Mustache.render(adminMessageTemplate, {
             message: message.text,
             createdAt: moment(message.createdAt).format('h:mm a')
@@ -84,9 +84,9 @@ const sendAckCallback = (error) => {
     messageFormInput.value = ''
     messageFormInput.focus()
     if (error) {
-        return console.log(error)
+        alert(error)
+        location.href = '/'
     }
-    console.log('Message delivered!')
 }
 
 const succeed = () => {
@@ -99,16 +99,22 @@ const failed = () => {
     location.href = '/'
 }
 
-const chat = new Socket({ succeed, failed }, 10000);
-chat.waitMessage(messageControl);
-chat.waitRoomInfo(roomControl);
-chat.joinChat({ username, room }, joinAckCallback);
+const socket = io();
+const chat = new Loader(socket).loadSocket(10000)
+chat.then(value => {
+    loading.style.display = "none";
+    chatView.style.display = "flex";
+    value.waitMessage(messageControl);
+    value.waitRoomInfo(roomControl);
+    value.joinChat({ username, room }, joinAckCallback);
+    messageForm.addEventListener('submit', (e) => {
+        e.preventDefault()
+        messageFormButton.setAttribute('disabled', 'disabled')
+        const message = e.target.elements.message.value
+        value.send(message, sendAckCallback)
+    })
 
-
-messageForm.addEventListener('submit', (e) => {
-    e.preventDefault()
-    messageFormButton.setAttribute('disabled', 'disabled')
-    const message = e.target.elements.message.value
-    chat.send(message, sendAckCallback)
+}, failed => {
+    alert("Time out")
+    location.href = '/'
 })
-

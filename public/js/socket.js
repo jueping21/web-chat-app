@@ -1,12 +1,46 @@
-class Socket {
-    constructor({succeed, failed}, timeout) {
-        this.socket = io()
-        this.#loadEvent({ succeed, failed }, timeout)
+class ChatSocket {
+    constructor(socket, eventList) {
+        this.socket = socket;
+        this.event = eventList;
     }
 
-    #loadEvent = ({ succeed, failed}, timeout = 10000) => {
+    waitMessage = (callback) => {
+        this.socket.on(this.event.receive, (message) => {
+            callback(message);
+        });
+    }
+
+    waitRoomInfo = (callback) => {
+        this.socket.on(this.event.room, (roomInfo) => {
+            this.event.room
+            console.log(roomInfo);
+            callback(roomInfo);
+        });
+    }
+
+    //TODO: we may need more args for ackCallback 
+    joinChat = ({ username, room }, fromAck) => {
+        this.socket.emit(this.event.join, { username, room }, (error) => {
+            fromAck(error);
+        })
+
+    }
+
+    send = (message, fromAck) => {
+        this.socket.emit(this.event.send, message, (error) => {
+            fromAck(error);
+        });
+    }
+}
+
+class Loader {
+    constructor(socket){
+        this.socket = socket;
+    }
+
+    loadSocket = (timeout = 10000) => {
         let p1 = new Promise((resovle, reject) => {
-            this.socket.emit('Events', "fetchEvents", (event) => {
+            this.socket.emit('Events', "fetchEventList", (event) => {
                 resovle(event);
             })
         })
@@ -17,40 +51,13 @@ class Socket {
             }, timeout);
         })
 
-        Promise.race([p1, p2]).then(
+        return Promise.race([p1, p2]).then(
             value => {
-                succeed();
+                return Promise.resolve(new ChatSocket(this.socket, value));
             },
             reason => {
-                failed();
+                return Promise.reject(reason)
             }
         )
-    }
-
-    waitMessage = (callback) => {
-        this.socket.on('message', (message) => {
-            callback(message);
-        });
-    }
-
-    waitRoomInfo = (callback) => {
-        this.socket.on('roomData', (roomInfo) => {
-            callback(roomInfo);
-        });
-    }
-
-
-    //TODO: we may need more args for ackCallback 
-    joinChat = ({ username, room }, ackCallback) => {
-        this.socket.emit('join', { username, room }, (error) => {
-            ackCallback(error)
-        })
-
-    }
-
-    send = (message, ackCallback) => {
-        this.socket.emit('sendMessage', message, (error) => {
-            ackCallback(error);
-        });
     }
 }

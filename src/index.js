@@ -5,8 +5,12 @@ const express = require('express')
 const socketio = require('socket.io')
 
 // load helper functions from other js files
-const { generateMessage } = require('./utils/messages')
+const message = require('./model/message')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
+
+const event = require('./model/events.js')
+const clientEvent = event.clientEvent();
+const serverEvent = event.serverEvent();
 
 // setup the chat server
 const app = express()
@@ -19,40 +23,69 @@ const publicDirectoryPath = path.join(__dirname, '../public')
 app.use(express.static(publicDirectoryPath))
 
 // wait for the client connections
-io.on('connection', (socket) => {
-    socket.on("Events", (event, callback) => {
+io.on(serverEvent.connection, (socket) => {
+
+    socket.on("Events", (_, ack) => {
         setTimeout(() => {
-            console.log(event, " received");
-            callback({ event: "test" });
+            ack(clientEvent);
         }, 1000);
     });
 
-    socket.on('join', ({ username, room }, callback) => {
-        const { error, user } = addUser({ id: socket.id, username, room });
-        if (error) {
-            return callback(error)
+    socket.on(serverEvent.join, (response, ack) => {
+        const username = response.username;
+        const session = socket.id;
+        console.log("join", username, session);
+        const room = response.room;
+
+        const newUser = {
+            id: session, username, room
         }
+
+        // add new user to the cache
+        const { error, user } = addUser(newUser);
+        if (error) {
+            return ack(error)
+        }
+
+        // add new user to the correct room
         socket.join(user.room)
-        socket.emit('message', generateMessage('Admin', 'Welcome!'))
-        socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`))
-        io.to(user.room).emit('roomData', {
+
+        // send welcome system message to the new user
+        let data = message.systemMessage("Welcome");
+        socket.emit(serverEvent.send, data)
+
+        // broadcast user-joined system message, but not for the current new user.
+        data = message.systemMessage(`${user.username} has joined`);
+        socket.broadcast.to(user.room).emit(serverEvent.send, data);
+
+        // update the users in current room and broadcast the new users list to everyone in this room
+        data = {
             room: user.room,
             users: getUsersInRoom(user.room)
-        })
-        callback()
+        };
+        
+        io.to(user.room).emit(serverEvent.room, data);
+
+        // TODO: features after joining the chat  
+        ack()
     })
 
-    socket.on('sendMessage', (message, callback) => {
-        const user = getUser(socket.id)
-        io.to(user.room).emit('message', generateMessage(user.username, message))
-        callback()
+    socket.on(serverEvent.receive, (response, ack) => {
+        const user = getUser(socket.id);
+        console.log(user);
+        if(!user){
+            return ack("session disconnect rejoin the chat");
+        }
+        const data = message.userMessage(user.username, response);
+        io.to(user.room).emit(serverEvent.send, data);
+        ack();
     })
-
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
         if (user) {
-            io.to(user.room).emit('message', generateMessage('Admin', `${user.username} has left!`))
+            const data = message.systemMessage(`${user.username} has left`)
+            io.to(user.room).emit('message', data)
             io.to(user.room).emit('roomData', {
                 room: user.room,
                 users: getUsersInRoom(user.room)
