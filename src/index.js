@@ -6,7 +6,7 @@ const socketio = require('socket.io')
 
 // load helper functions from other js files
 const message = require('./model/message')
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
+const { addUser, removeUser, getUser, getUsersInRoom, addMessageToRoom, fetchMessagesFromRoom} = require('./utils/users')
 
 const event = require('./model/events.js')
 const clientEvent = event.clientEvent();
@@ -17,7 +17,7 @@ const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
 const port = process.env.PORT || 8000
-
+let num = 0;
 // set up the static directory for the chat server
 const publicDirectoryPath = path.join(__dirname, '../public')
 app.use(express.static(publicDirectoryPath))
@@ -34,7 +34,6 @@ io.on(serverEvent.connection, (socket) => {
     socket.on(serverEvent.join, (response, ack) => {
         const username = response.username;
         const session = socket.id;
-        console.log("join", username, session);
         const room = response.room;
 
         const newUser = {
@@ -46,6 +45,7 @@ io.on(serverEvent.connection, (socket) => {
         if (error) {
             return ack(error)
         }
+
 
         // add new user to the correct room
         socket.join(user.room)
@@ -63,7 +63,7 @@ io.on(serverEvent.connection, (socket) => {
             room: user.room,
             users: getUsersInRoom(user.room)
         };
-        
+
         io.to(user.room).emit(serverEvent.room, data);
 
         // TODO: features after joining the chat  
@@ -72,12 +72,12 @@ io.on(serverEvent.connection, (socket) => {
 
     socket.on(serverEvent.receive, (response, ack) => {
         const user = getUser(socket.id);
-        console.log(user);
-        if(!user){
+        if (!user) {
             return ack("session disconnect rejoin the chat");
         }
         const data = message.userMessage(user.username, response);
         io.to(user.room).emit(serverEvent.send, data);
+        addMessageToRoom(user.room, data)
         ack();
     })
 
@@ -97,3 +97,8 @@ io.on(serverEvent.connection, (socket) => {
 server.listen(port, () => {
     console.log(`Server is up on port ${port}!`)
 })
+
+// setInterval(async() => {
+//     const sockets = (await io.fetchSockets()).map(socket => socket.id);
+//     console.log(sockets);
+// }, 2000);

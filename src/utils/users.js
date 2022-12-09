@@ -46,9 +46,28 @@ const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room)
 }
 
+let room = new Map();
+const addMessageToRoom = (num, message) => {
+    if(room.has(num)){
+        let msgs = room.get(num);
+        msgs.push(message);
+        room.set(num, msgs);
+    }else{
+        room.set(num, [message]);
+    }
+    console.log(room);
+}
+
+const fetchMessagesFromRoom = () => {
+    
+}
+
+
 module.exports = {
     addUser,
     removeUser,
     getUser,
-    getUsersInRoom
+    getUsersInRoom,
+    addMessageToRoom,
+    fetchMessagesFromRoom
 }

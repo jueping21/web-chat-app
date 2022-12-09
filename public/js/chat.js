@@ -16,6 +16,8 @@ const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 // TODO: implement a parser  
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
+document.title = `${username}-${room}`;
+
 const autoscroll = () => {
     // New message element
     const newMessage = messages.lastElementChild
