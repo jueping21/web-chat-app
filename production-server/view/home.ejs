@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" href="/img/favicon.png">
+        <title>Home</title>
+        <link rel="stylesheet" href="./css/home.css" />
+    </head>
+    <body>
+        <div class="loading" id="loading">
+            <div class="middle">
+                <div class="bar bar1"></div>
+                <div class="bar bar2"></div>
+                <div class="bar bar3"></div>
+                <div class="bar bar4"></div>
+                <div class="bar bar5"></div>
+                <div class="bar bar6"></div>
+                <div class="bar bar7"></div>
+                <div class="bar bar8"></div>
+            </div>
+            <div>Please wait</div>
+        </div>
+
+        <div class="home-index" id="home-index">
+            <nav class="nav-bar">
+                <div class="nav-bar-title">Chat Lobby</div>
+                <div class="nav-bar-btn" id="nav-bar">
+                    <button class="create-btn" id="create-btn" type="button">
+                        Create Room
+                    </button>
+                    <button class="logout-btn" id="logout-btn" type="button">
+                        Logout
+                    </button>
+                </div>
+            </nav>
+
+            <div class="grid">
+                <div class="grid-container" id="grid-container"></div>
+            </div>
+        </div>
+        <div class="centered-form" , id="centered-form">
+            <div class="centered-form__box">
+                <h1>Create Room</h1>
+                <form action="/chat.html">
+                    <label>Display name</label>
+                    <h2 class="nickname" id="nickname">Name</h2>
+                    <label>Room</label>
+                    <input
+                        type="text"
+                        name="room"
+                        placeholder="Room"
+                        required
+                        id="room-input"
+                    />
+                    <button id="join-btn" type="button">Join</button>
+                    <button id="close-btn" type="button">Close</button>
+                </form>
+            </div>
+        </div>
+        <script
+            src="https://cdn.socket.io/4.5.4/socket.io.min.js"
+            integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
+            crossorigin="anonymous"
+        ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
+        <script src="./js/fetch-controller.js"></script>
+        <script src="./js/home.js"></script>
+    </body>
+</html>

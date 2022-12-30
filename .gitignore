@@ -1,4 +1,9 @@
 .DS_Store
-coverage/
-node_modules/
-tests/
+/login-api/.DS_Store
+/login-api/node_modules
+/chat-server/.DS_Store
+/chat-server/node_modules
+/production-server/.DS_Store
+/production-server/node_modules
+/rec-server/.DS_Store
+/rec-server/node_modules

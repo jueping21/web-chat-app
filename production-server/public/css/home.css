@@ -1,0 +1,232 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    background-color: #333744;
+}
+
+input {
+    font-size: 14px;
+}
+
+body {
+    line-height: 1.4;
+    color: #333333;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #777;
+}
+
+input {
+    border: 1px solid #eeeeee;
+    padding: 12px;
+    outline: none;
+}
+
+button {
+    cursor: pointer;
+    padding: 12px;
+    background: #7c5cbf;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-bottom: 1rem;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #6b47b8;
+}
+
+button:disabled {
+    cursor: default;
+    background: #7c5cbf94;
+}
+
+/* Home Page Styles */
+.nav-bar {
+    max-height: 150px;
+    background: #2c2f3a;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logout-btn {
+    border-radius: 15px;
+    width: 120px;
+    margin: 2rem 2rem 2rem 0;
+}
+
+.create-btn {
+    border-radius: 15px;
+    width: 120px;
+    margin: 2rem;
+}
+
+.nav-bar-title {
+    color: white;
+    text-align: center;
+    margin: 2rem;
+    font-size: 36px;
+}
+
+/* room display */
+.grid-item {
+    margin-top: 0, auto;
+    background-color: #7c5cbf;
+    color: white;
+    padding: 1rem;
+    height: 10rem;
+    text-align: center;
+    line-height: 10rem;
+    border-radius: 10px;
+}
+
+.grid-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.grid {
+    background-color: #333744;
+    height: 100vh;
+}
+
+.link {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+}
+
+/* Join Page Styles */
+.nickname {
+    margin-bottom: 8px;
+}
+
+.centered-form {
+    background: #333744;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.centered-form__box {
+    box-shadow: 0px 0px 17px 1px #1d1f26;
+    background: #f7f7fa;
+    padding: 24px;
+    width: 250px;
+}
+
+.centered-form button {
+    width: 100%;
+}
+
+.centered-form input {
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+@media (min-width: 600px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 800px) {
+    .grid-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1000px) {
+    .grid-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.home-index{
+    display: none;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+    color: #fff;
+}
+
+.bar {
+    width: 10px;
+    height: 70px;
+    background: #333744;
+    display: inline-block;
+    transform-origin: bottom center;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    /*   box-shadow:5px 10px 20px inset rgba(255,23,25.2); */
+    animation: loader 1.2s linear infinite;
+}
+.bar1 {
+    animation-delay: 0.1s;
+}
+.bar2 {
+    animation-delay: 0.2s;
+}
+.bar3 {
+    animation-delay: 0.3s;
+}
+.bar4 {
+    animation-delay: 0.4s;
+}
+.bar5 {
+    animation-delay: 0.5s;
+}
+.bar6 {
+    animation-delay: 0.6s;
+}
+.bar7 {
+    animation-delay: 0.7s;
+}
+.bar8 {
+    animation-delay: 0.8s;
+}
+
+@keyframes loader {
+    0% {
+        transform: scaleY(0.1);
+    }
+    50% {
+        transform: scaleY(1);
+        background: #7c5cbf;
+    }
+    100% {
+        transform: scaleY(0.1);
+        background: transparent;
+    }
+}

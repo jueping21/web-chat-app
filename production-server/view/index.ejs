@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" href="/img/favicon.png">
+        <title>Chat Login</title>
+        <link rel="stylesheet" href="./css/index.css" />
+    </head>
+    <body>
+        <div class="centered-form">
+            <div class="centered-form__box">
+                <h1>Welcome</h1>
+                <form action="/home" method="get">
+                    <label>Email</label>
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Email"
+                        required
+                        id="email"
+                    />
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        name="room"
+                        placeholder="Password"
+                        required
+                        id="password"
+                    />
+                    <button id="login-btn" type="button">Login</button>
+                    <button id="signup-btn" type="button">Sign up</button>
+                </form>
+            </div>
+        </div>
+        <script src="./js/fetch-controller.js"></script>
+        <script src="./js/index.js"></script>
+    </body>
+</html>
