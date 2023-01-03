@@ -1,9 +1,9 @@
 .DS_Store
-/login-api/.DS_Store
-/login-api/node_modules
-/chat-server/.DS_Store
-/chat-server/node_modules
-/production-server/.DS_Store
-/production-server/node_modules
-/rec-server/.DS_Store
-/rec-server/node_modules
+/webChat-login-api/app/.DS_Store
+/webChat-login-api/app/node_modules
+/webChat-server/app/.DS_Store
+/webChat-server/app/node_modules
+/webChat-production-server/app/.DS_Store
+/webChat-production-server/app/node_modules
+/webChat-management-api/app/.DS_Store
+/webChat-management-api/app/node_modules

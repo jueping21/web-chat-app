@@ -1,0 +1,16 @@
+services:
+  redis_cache:
+    image: 'redis:6.2.8-alpine'
+    command: redis-server --requirepass password
+    ports:
+      - 6379
+
+  management_api:
+    build: ./
+    image: "management_api:latest"
+    container_name: management_api
+    command: sh -c "/home/management_api/wait && /home/management_api/start-script"
+    ports:
+      - 27000:21583
+    environment:
+      WAIT_HOSTS: redis_cache:6379

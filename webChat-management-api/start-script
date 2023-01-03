@@ -1,0 +1,5 @@
+echo "Server-ManagementAPI is ready for starting."
+echo "Server-ManagementAPI is installing dependencies."
+npm install
+echo "Dependencies has been installed successfully."
+node index.js

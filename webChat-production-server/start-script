@@ -1,0 +1,5 @@
+echo "Production-Server is ready for starting."
+echo "Production-Server is installing dependencies."
+npm install
+echo "Dependencies has been installed successfully."
+node index.js

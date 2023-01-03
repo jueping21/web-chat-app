@@ -1,0 +1,10 @@
+services:
+  production_server:
+    build: ./
+    image: "production_server:latest"
+    container_name: production_server
+    command: sh -c "/home/production_server/start-script"
+    ports:
+      - 29000:21583
+    environment: 
+      - "PORT=21583"
