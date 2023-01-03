@@ -9,7 +9,8 @@ sh run.sh
 
 ## Guildline
 - Go to http://localhost:29000 for user login, sign-up, and chating.
-
+- http://localhost:8081/ provides UI interface for user account management. [username: admin / password: password]
+ 
 ## Topology
 - webChat-login-api uses port 26000
 - webChat-management-api uses port 27000
